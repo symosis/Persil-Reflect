@@ -3,6 +3,8 @@ package persil.reflect;
 import haxe.rtti.CType;
 import haxe.rtti.Meta;
 
+import persil.metadata.Metadata;
+
 class Field implements MetadataAware
 {
 	public var owner(getOwner, null) : ClassInfo;
@@ -20,8 +22,10 @@ class Field implements MetadataAware
 		this.owner = owner;
 	}
 	
-	public function hasMetadata(name : String) : Bool
+	public function hasMetadata(metadataClass : Class<Metadata>) : Bool
 	{
+		var metadata : Metadata = cast Type.createInstance(metadataClass, []);
+
 		var declaredType = ClassInfo.forName(definedInClass);
 		var metadatas = Meta.getFields(declaredType.type);
 		
@@ -30,7 +34,7 @@ class Field implements MetadataAware
 			if (fieldName == this.name)
 			{
 				var meta = Reflect.field(metadatas, fieldName);
-				if (Reflect.hasField(meta, name))
+				if (Reflect.hasField(meta, metadata.identifier))
 					return true;
 			}
 		}
